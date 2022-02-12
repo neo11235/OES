@@ -1,4 +1,4 @@
-package com.fractals.OES;
+package com.fractals.OES.Classes;
 
 public class Regions {
     int regionId;
