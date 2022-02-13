@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class OesApplication implements CommandLineRunner {
 //	@Autowired
 //	private JdbcTemplate jdbcTemplate;
-
+//	boolean createNewDatabase=true;
 	public static void main(String[] args) {
 
 		SpringApplication.run(OesApplication.class, args);
@@ -16,6 +16,11 @@ public class OesApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args)throws Exception
 	{
+//		if(createNewDatabase)
+//		{
+			//new data
+//		}
+
 //		String sql="CREATE TABLE C##OES.PERSON2 (NID VARCHAR2(15) PRIMARY KEY,NAME VARCHAR2(50) );";
 //		try {
 //			jdbcTemplate.execute(sql);

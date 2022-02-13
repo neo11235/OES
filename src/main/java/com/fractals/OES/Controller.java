@@ -1,9 +1,6 @@
 package com.fractals.OES;
 
-import com.fractals.OES.Classes.ActiveUserInfo;
-import com.fractals.OES.Classes.LoginData;
-import com.fractals.OES.Classes.LoginResponse;
-import com.fractals.OES.Classes.User;
+import com.fractals.OES.Classes.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +15,7 @@ public class Controller {
     {
         User user=null;
         try{
-            if((user=service.checkUserExist(loginData.getEmail(),loginData.getPassword()))==null)
+            if((user=service.getUser(loginData.getEmail(),loginData.getPassword()))==null)
                 return new LoginResponse("failed",null);
         }catch (Exception e)
         {
@@ -89,5 +86,41 @@ public class Controller {
             e.printStackTrace();
         }
         return new LoginResponse("ok",null);
+    }
+    @RequestMapping(method=RequestMethod.POST,value="/createNewCourse/{token}")
+    public Response createNewCourse(@PathVariable("token") String token,@RequestBody Course course)
+    {
+        User user=null;
+        String failed="failed";
+        String success="success";
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return new Response(failed,"No user found");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        if(!user.getRole().equals("teacher"))
+            return new Response(failed,"User dont have the privilege");
+        course.setUserId(user.getUserId());
+        try
+        {
+            course.setCourseId(service.getNewCourseId(course));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        try
+        {
+            service.insertNewCourse(course);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,"sql exception");
+        }
+        return new Response(success,null);
     }
 }
