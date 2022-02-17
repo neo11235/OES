@@ -9,7 +9,8 @@ public class Controller {
 
     @Autowired
     Service service;
-
+    String failed="failed";
+    String success="success";
     @RequestMapping(method = RequestMethod.POST,value="/login")
     public LoginResponse login(@RequestBody LoginData loginData)
     {
@@ -77,7 +78,7 @@ public class Controller {
     }
 
     @RequestMapping("/logout/{token}")
-    public LoginResponse logout(@PathVariable("token") String token)
+    public Response logout(@PathVariable("token") String token)
     {
         try{
             service.logout(token);
@@ -85,14 +86,12 @@ public class Controller {
         {
             e.printStackTrace();
         }
-        return new LoginResponse("ok",null);
+        return new Response("ok",null);
     }
     @RequestMapping(method=RequestMethod.POST,value="/createNewCourse/{token}")
     public Response createNewCourse(@PathVariable("token") String token,@RequestBody Course course)
     {
         User user=null;
-        String failed="failed";
-        String success="success";
         try{
             user=service.getUserByToken(token);
             if(user==null)
@@ -120,6 +119,39 @@ public class Controller {
         {
             e.printStackTrace();
             return new Response(failed,"sql exception");
+        }
+        return new Response(success,null);
+    }
+
+    @RequestMapping(method = RequestMethod.POST,value="/joinCourse/{token}")
+    public Response joinNewCourse(@PathVariable("token") String token,@RequestBody Course course)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return new Response(failed,"Could not find user");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        if(!user.getRole().equals("student"))
+            return new Response(failed,"User not a student and cant join a course");
+        try {
+            if(service.getCourseById(course.getCourseId())==null)
+                return new Response(failed,"No such course id exist");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        try{
+            service.insertStudentTakes(new StudentTakes(user.getUserId(),course.getCourseId()));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
         }
         return new Response(success,null);
     }

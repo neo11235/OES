@@ -2,6 +2,7 @@ package com.fractals.OES;
 
 import com.fractals.OES.Classes.ActiveUserInfo;
 import com.fractals.OES.Classes.Course;
+import com.fractals.OES.Classes.StudentTakes;
 import com.fractals.OES.Classes.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -99,6 +100,23 @@ public class Service {
 
     public void insertNewCourse(Course course) throws  Exception{
         String sql="INSERT INTO "+databaseName+".COURSES VALUES"+course.toString();
+        jdbcTemplate.execute(sql);
+    }
+
+    public Course getCourseById(String courseId) {
+        String sql="SELECT * FROM "+ databaseName+".COURSES WHERE COURSE_ID='"+courseId+"'";
+        List<Course> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Course.class));
+        if(res.isEmpty())
+            return null;
+        return res.get(0);
+    }
+
+    public void insertStudentTakes(StudentTakes takes) throws Exception{
+        String sqlCheck="SELECT * FROM "+databaseName+".STUDENT_TAKES WHERE USER_ID='"+takes.getUserId()+"' AND COURSE_ID='"+takes.getCourseId()+"'";
+        List<StudentTakes> res=jdbcTemplate.query(sqlCheck,BeanPropertyRowMapper.newInstance(StudentTakes.class));
+        if(!res.isEmpty())
+            throw new Exception("Student already takes the course");
+        String sql="INSERT INTO "+databaseName+".STUDENT_TAKES VALUES"+takes.toString();
         jdbcTemplate.execute(sql);
     }
 }
