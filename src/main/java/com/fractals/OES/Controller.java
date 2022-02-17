@@ -4,13 +4,15 @@ import com.fractals.OES.Classes.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class Controller {
 
     @Autowired
-    Service service;
-    String failed="failed";
-    String success="success";
+    private Service service;
+    private String failed="failed";
+    private String success="success";
     @RequestMapping(method = RequestMethod.POST,value="/login")
     public LoginResponse login(@RequestBody LoginData loginData)
     {
@@ -154,5 +156,37 @@ public class Controller {
             return new Response(failed,e.getMessage());
         }
         return new Response(success,null);
+    }
+
+    @RequestMapping("/home/{token}")
+    public List<Course> getAllCourse(@PathVariable("token") String token)//user must already be verified before calling this otherwise it returns null
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)//shouldn't be true,just for extra safety
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        List<Course> courses=null;
+        try
+        {
+            if(user.getRole().equals("teacher"))
+            {
+                courses=service.getCourseTakenByTeacher(user);
+            }
+            else
+            {
+                courses=service.getCourseTakenByStudent(user);
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        return  courses;
     }
 }

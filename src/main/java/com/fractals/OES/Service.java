@@ -119,4 +119,27 @@ public class Service {
         String sql="INSERT INTO "+databaseName+".STUDENT_TAKES VALUES"+takes.toString();
         jdbcTemplate.execute(sql);
     }
+
+    public List<Course> getCourseTakenByTeacher(User user) throws Exception{
+        String sql="SELECT * FROM "+databaseName+".COURSES WHERE USER_ID='"+user.getUserId()+"'";
+        List<Course> courseList=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Course.class));
+        for(int i=0;i<courseList.size();++i)
+        {
+            courseList.get(i).setUserId(null);
+        }
+        return courseList;
+    }
+    public List<Course> getCourseTakenByStudent(User user) throws Exception {
+        String sql="SELECT C.COURSE_ID AS COURSE_ID,C.COURSE_NAME AS COURSE_NAME,C.USER_ID AS USER_ID " +
+                "FROM "+databaseName+".STUDENT_TAKES ST " +
+                "JOIN "+databaseName+".COURSES C " +
+                "ON (ST.COURSE_ID=C.COURSE_ID) " +
+                "WHERE ST.USER_ID='"+user.getUserId()+"'";
+        List<Course> courseList=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Course.class));
+        for(int i=0;i<courseList.size();++i)
+        {
+            courseList.get(i).setUserId(null);
+        }
+        return courseList;
+    }
 }
