@@ -151,4 +151,14 @@ public class Service {
                 "TO_DATE('"+format.format(message.getSentTime())+"','YYYY-MM-DD:HH24-MI-SS'))";
         jdbcTemplate.execute(sql);
     }
+
+    public List<ReturnMessage> getMessage(String courseId, Integer numberOfMessage) throws Exception{
+        String sql="SELECT (UO.FIRST_NAME||' '||LAST_NAME) AS USER_NAME,M.MESSAGE AS MESSAGE,TO_CHAR(M.SENT_TIME,'YYYY-MM-DD:HH24-MI-SS') AS SENT_TIME " +
+                    "FROM "+databaseName+".MESSAGES M JOIN "+databaseName+".USER_OES UO " +
+                "ON (M.USER_ID=UO.USER_ID) WHERE M.COURSE_ID='"+courseId+"' " +
+                "ORDER BY M.SENT_TIME DESC FETCH  NEXT "+numberOfMessage.toString()+
+                "ROWS ONLY ";
+        List<ReturnMessage> messages=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(ReturnMessage.class));
+        return messages;
+    }
 }

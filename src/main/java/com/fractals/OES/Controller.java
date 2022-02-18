@@ -217,4 +217,29 @@ public class Controller {
         }
         return new Response(success,null);
     }
+
+    @RequestMapping(method = RequestMethod.GET,value="/getMessage/{token}/{courseId}/{numberOfMessage}")
+    public List<ReturnMessage> getMessage(@PathVariable("token") String token,@PathVariable("courseId") String courseId,@PathVariable("numberOfMessage") int numberOfMessage)
+    {
+        User user=null;
+        try
+        {
+            user=service.getUserByToken(token);
+            if(user==null)
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        List<ReturnMessage> messages=null;
+        try{
+            messages=service.getMessage(courseId,numberOfMessage);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        return messages;
+    }
 }
