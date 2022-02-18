@@ -2,11 +2,17 @@ package com.fractals.OES;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
-public final class CreateDatabase {
+@Service
+public class CreateDatabase {
     @Autowired
-    private static JdbcTemplate jdbcTemplate;
-    private static String USER_OES="CREATE TABLE C##OES.USER_OES" +
+    private JdbcTemplate jdbcTemplate;
+
+    public CreateDatabase() {
+    }
+
+    private String USER_OES="CREATE TABLE C##OES.USER_OES" +
             "(" +
             "USER_ID VARCHAR2(64) PRIMARY KEY," +
             "FIRST_NAME VARCHAR2(40) NOT NULL," +
@@ -17,20 +23,20 @@ public final class CreateDatabase {
             "ROLE VARCHAR2(10) NOT NULL," +
             "PHN_NUMBER VARCHAR2(16)" +
             ")";
-    private static String ActiveUserInfo="CREATE TABLE C##OES.ACTIVE_USER_INFO" +
+    private String ActiveUserInfo="CREATE TABLE C##OES.ACTIVE_USER_INFO" +
             "(" +
             "USER_ID VARCHAR2(64)," +
             "TOKEN VARCHAR2(64) PRIMARY KEY," +
             "CONSTRAINT USER_ID_FK FOREIGN KEY(USER_ID) REFERENCES USER_OES(USER_ID) ON DELETE  CASCADE " +
             ")";
-    private static String Courses="CREATE TABLE C##OES.COURSES" +
+    private String Courses="CREATE TABLE C##OES.COURSES" +
             "(" +
             "COURSE_ID VARCHAR2(64) PRIMARY KEY," +
             "COURSE_NAME VARCHAR2(64)," +
             "USER_ID VARCHAR2(64)," +
             "CONSTRAINT COURSES_USER_ID_FK FOREIGN KEY(USER_ID) REFERENCES USER_OES(USER_ID) ON DELETE CASCADE\n" +
             ")";
-    private static String studentTakes="CREATE TABLE C##OES.STUDENT_TAKES" +
+    private String studentTakes="CREATE TABLE C##OES.STUDENT_TAKES" +
             "(" +
             "USER_ID VARCHAR2(64)," +
             "COURSE_ID VARCHAR2(64)," +
@@ -38,7 +44,7 @@ public final class CreateDatabase {
             "CONSTRAINT ST_UID_FK FOREIGN KEY(USER_ID) REFERENCES USER_OES(USER_ID) ON DELETE CASCADE," +
             "CONSTRAINT ST_CID_FK FOREIGN KEY(COURSE_ID) REFERENCES COURSES(COURSE_ID) ON DELETE CASCADE" +
             ")";
-    private static String messageCreate="CREATE TABLE C##OES.MESSAGES(" +
+    private String messageCreate="CREATE TABLE C##OES.MESSAGES(" +
             "USER_ID VARCHAR2(64) NOT NULL," +
             "COURSE_ID VARCHAR2(64) NOT NULL," +
             "MESSAGE VARCHAR2(512) NOT NULL," +
@@ -48,7 +54,7 @@ public final class CreateDatabase {
             "CONSTRAINT MSG_UID_FK FOREIGN KEY(USER_ID) REFERENCES C##OES.USER_OES(USER_ID) ON DELETE CASCADE," +
             "CONSTRAINT MSG_CID_FK FOREIGN KEY(COURSE_ID) REFERENCES C##OES.COURSES(COURSE_ID) ON DELETE CASCADE" +
             ")";
-    public static void create()
+    public void create()
     {
 
         try {

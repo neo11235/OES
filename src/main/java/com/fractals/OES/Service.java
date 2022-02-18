@@ -161,4 +161,12 @@ public class Service {
         List<ReturnMessage> messages=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(ReturnMessage.class));
         return messages;
     }
+
+    public String getNewQuestionId() throws Exception {
+        return null;
+    }
+
+    public void insertNewQuestion(Question question) throws Exception{
+        return;
+    }
 }

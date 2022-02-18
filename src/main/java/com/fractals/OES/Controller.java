@@ -242,4 +242,37 @@ public class Controller {
         }
         return messages;
     }
+    @RequestMapping(method = RequestMethod.POST,value="/createQuestion/{token}")
+    public Response createQuestion(@PathVariable("token") String token,@RequestBody Question question)
+    {
+        User user=null;
+        try
+        {
+            user=service.getUserByToken(token);
+            if(user==null)
+                return new Response(failed,"cant find user");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        if(!user.getRole().equals("teacher"))
+            return new Response(failed,"user dont have the privilege");
+        question.setUserId(user.getUserId());
+        try{
+            question.setQuestionId(service.getNewQuestionId());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        try{
+            service.insertNewQuestion(question);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        return new Response(success,null);
+    }
 }
