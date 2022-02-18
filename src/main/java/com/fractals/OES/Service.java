@@ -1,13 +1,11 @@
 package com.fractals.OES;
 
-import com.fractals.OES.Classes.ActiveUserInfo;
-import com.fractals.OES.Classes.Course;
-import com.fractals.OES.Classes.StudentTakes;
-import com.fractals.OES.Classes.User;
+import com.fractals.OES.Classes.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -141,5 +139,16 @@ public class Service {
             courseList.get(i).setUserId(null);
         }
         return courseList;
+    }
+
+    public void insertNewMessage(Message message) throws  Exception{
+        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
+        String sql="INSERT  INTO "+databaseName+
+                ".MESSAGES (USER_ID,COURSE_ID,MESSAGE,SENT_TIME) VALUES('" +
+                message.getUserId()+"','"+
+                message.getCourseId()+"','"+
+                message.getMessage()+"',"+
+                "TO_DATE('"+format.format(message.getSentTime())+"','YYYY-MM-DD:HH24-MI-SS'))";
+        jdbcTemplate.execute(sql);
     }
 }

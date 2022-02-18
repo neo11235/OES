@@ -38,6 +38,16 @@ public final class CreateDatabase {
             "CONSTRAINT ST_UID_FK FOREIGN KEY(USER_ID) REFERENCES USER_OES(USER_ID) ON DELETE CASCADE," +
             "CONSTRAINT ST_CID_FK FOREIGN KEY(COURSE_ID) REFERENCES COURSES(COURSE_ID) ON DELETE CASCADE" +
             ")";
+    private static String messageCreate="CREATE TABLE C##OES.MESSAGES(" +
+            "USER_ID VARCHAR2(64) NOT NULL," +
+            "COURSE_ID VARCHAR2(64) NOT NULL," +
+            "MESSAGE VARCHAR2(512) NOT NULL," +
+            "MESSAGE_ID NUMBER GENERATED ALWAYS AS IDENTITY START WITH 1," +
+            "SENT_TIME DATE DEFAULT TO_DATE('0001-01-01:00-00-00','YYYY-MM-DD:HH24-MI-SS') NOT NULL," +
+            "PRIMARY KEY(MESSAGE_ID)," +
+            "CONSTRAINT MSG_UID_FK FOREIGN KEY(USER_ID) REFERENCES C##OES.USER_OES(USER_ID) ON DELETE CASCADE," +
+            "CONSTRAINT MSG_CID_FK FOREIGN KEY(COURSE_ID) REFERENCES C##OES.COURSES(COURSE_ID) ON DELETE CASCADE" +
+            ")";
     public static void create()
     {
 
@@ -57,5 +67,11 @@ public final class CreateDatabase {
             jdbcTemplate.execute(studentTakes);
         }catch (Exception e)
         {}
+        try{
+            jdbcTemplate.execute(messageCreate);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

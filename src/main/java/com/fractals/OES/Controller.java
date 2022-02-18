@@ -4,6 +4,7 @@ import com.fractals.OES.Classes.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 
 @RestController
@@ -188,5 +189,32 @@ public class Controller {
             return null;
         }
         return  courses;
+    }
+
+    @RequestMapping(method = RequestMethod.POST,value="/sendMessage/{token}")
+    public Response sendMessage(@PathVariable("token") String token,@RequestBody Message message)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return new Response(failed,"Cant find the user");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        message.setUserId(user.getUserId());
+        long millis=System.currentTimeMillis();
+        java.sql.Date date=new Date(millis);
+        message.setSentTime(date);
+        try{
+            service.insertNewMessage(message);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        return new Response(success,null);
     }
 }
