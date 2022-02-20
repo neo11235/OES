@@ -178,4 +178,10 @@ public class Service {
         String sql="INSERT INTO "+databaseName+".QUESTIONS VALUES"+question.toString();
         jdbcTemplate.execute(sql);
     }
+
+    public List<Question> getAllQuestion(User user)throws Exception {
+        String sql="SELECT * FROM "+databaseName+".QUESTIONS WHERE USER_ID='"+user.getUserId()+"'";
+        List<Question> result=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Question.class));
+        return result;
+    }
 }

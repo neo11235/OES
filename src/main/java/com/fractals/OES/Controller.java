@@ -275,4 +275,29 @@ public class Controller {
         }
         return new Response(success,null);
     }
+
+    @RequestMapping(method = RequestMethod.GET,value="/getAllQuestions/{token}")
+    public List<Question> getAllQuestion(@PathVariable("token") String token)
+    {
+        User user=null;
+        try
+        {
+            user=service.getUserByToken(token);
+            if(user==null)
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();;
+            return null;
+        }
+        if(!user.getRole().equals("teacher"))
+            return null;
+        try{
+            return service.getAllQuestion(user);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
