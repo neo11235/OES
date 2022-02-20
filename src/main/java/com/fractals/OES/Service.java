@@ -163,10 +163,19 @@ public class Service {
     }
 
     public String getNewQuestionId() throws Exception {
-        return null;
+        for(int i=0;i<10;++i)
+        {
+            String id=UUID.randomUUID().toString();
+            String sql="SELECT * FROM "+databaseName+".QUESTIONS WHERE QUESTION_ID='"+id+"'";
+            List<Question> result=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Question.class));
+            if(result.isEmpty())
+                return id;
+        }
+        throw new Exception("Failed to generate new Id");
     }
 
     public void insertNewQuestion(Question question) throws Exception{
-        return;
+        String sql="INSERT INTO "+databaseName+".QUESTIONS VALUES"+question.toString();
+        jdbcTemplate.execute(sql);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class OesApplication implements CommandLineRunner {
-	boolean createNewDatabase=true;
+	boolean createNewDatabase=false;
 	public static void main(String[] args) {
 
 		SpringApplication.run(OesApplication.class, args);

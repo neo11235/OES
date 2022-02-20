@@ -26,6 +26,19 @@ public class Question {
         this.userId = userId;
     }
 
+    @Override
+    public String toString() {
+        return "('"+questionId+"','"+
+                description+"','"+
+                option1+"','"+
+                option2+"','"+
+                option3+"','"+
+                option4+"','"+
+                rightOption.toString()+"','"+
+                mark.toString()+"','"+
+                userId+"')";
+    }
+
     public String getQuestionId() {
         return questionId;
     }

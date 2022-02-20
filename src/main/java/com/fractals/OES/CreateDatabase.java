@@ -54,6 +54,19 @@ public class CreateDatabase {
             "CONSTRAINT MSG_UID_FK FOREIGN KEY(USER_ID) REFERENCES C##OES.USER_OES(USER_ID) ON DELETE CASCADE," +
             "CONSTRAINT MSG_CID_FK FOREIGN KEY(COURSE_ID) REFERENCES C##OES.COURSES(COURSE_ID) ON DELETE CASCADE" +
             ")";
+    private String questionCreate="CREATE TABLE C##OES.QUESTIONS(\n" +
+            "QUESTION_ID VARCHAR2(64),\n" +
+            "DESCRIPTION VARCHAR2(1024) NOT NULL,\n" +
+            "OPTION1 VARCHAR2(256) NOT NULL,\n" +
+            "OPTION2 VARCHAR2(256) NOT NULL,\n" +
+            "OPTION3 VARCHAR2(256) NOT NULL,\n" +
+            "OPTION4 VARCHAR2(256) NOT NULL,\n" +
+            "RIGHT_OPTION NUMBER NOT NULL,\n" +
+            "MARK NUMBER NOT NULL,\n" +
+            "USER_ID VARCHAR2(64) NOT NULL,\n" +
+            "PRIMARY KEY(QUESTION_ID),\n" +
+            "CONSTRAINT Q_UID_FK FOREIGN KEY(USER_ID) REFERENCES C##OES.USER_OES(USER_ID)\n" +
+            ");";
     public void create()
     {
 
