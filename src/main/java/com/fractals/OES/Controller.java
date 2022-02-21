@@ -350,4 +350,36 @@ public class Controller {
         qp.insert("qid4");
         return qp;
     }
+
+    @RequestMapping(method = RequestMethod.GET,value="/getNotifications/{token}/{courseId}/{numberOfNotification}")
+    public List<Notification> getNotification(@PathVariable("token") String token,
+                                              @PathVariable("courseId") String courseId,
+                                              @PathVariable("numberOfNotification") Integer numberOfNotification)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        try{
+            if(!user.getRole().equals("student")||!service.checkIfStudentTakes(user.getUserId(),courseId))
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        try{
+            return service.getNotification(user.getUserId(),courseId,numberOfNotification);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

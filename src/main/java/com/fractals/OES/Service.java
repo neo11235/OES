@@ -157,7 +157,7 @@ public class Service {
                     "FROM "+databaseName+".MESSAGES M JOIN "+databaseName+".USER_OES UO " +
                 "ON (M.USER_ID=UO.USER_ID) WHERE M.COURSE_ID='"+courseId+"' " +
                 "ORDER BY M.SENT_TIME DESC FETCH  NEXT "+numberOfMessage.toString()+
-                "ROWS ONLY ";
+                " ROWS ONLY ";
         List<ReturnMessage> messages=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(ReturnMessage.class));
         return messages;
     }
@@ -216,5 +216,21 @@ public class Service {
                     +exam.getExamId()+"','"+qid+"')";
             jdbcTemplate.execute(sql2);
         }
+    }
+
+    public boolean checkIfStudentTakes(String userId,String courseId) {
+        String sql="SELECT * FROM "+databaseName+".STUDENT_TAKES WHERE USER_ID ='"+
+                userId+"' AND COURSE_ID='"+courseId+"'";
+        List<StudentTakes> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(StudentTakes.class));
+        return !res.isEmpty();
+    }
+
+    public List<Notification> getNotification(String userId, String courseId, Integer numberOfNotification) {
+        String sql="SELECT * FROM "+databaseName+".NOTIFICATIONS " +
+                "WHERE USER_ID='"+userId+"' AND COURSE_ID = '"+courseId+
+                "' ORDER BY NOTIFICATION_ID DESC " +
+                "FETCH NEXT "+numberOfNotification.toString()+" ROWS ONLY";
+        List<Notification> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Notification.class));
+        return res;
     }
 }
