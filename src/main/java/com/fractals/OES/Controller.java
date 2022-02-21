@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -299,5 +300,54 @@ public class Controller {
             e.printStackTrace();
             return null;
         }
+    }
+    @RequestMapping(method = RequestMethod.POST,value="/createExam/{token}")
+    public Response createExam(@PathVariable("token") String token,@RequestBody ExamData examData)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return new Response(failed,"Cant find user");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+
+        try {
+            if(!user.getRole().equals("teacher")||!service.checkCourseExist(user.getUserId(),examData.getCourseId()))
+                return new Response(failed,"User dont have the privilege");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        Exam exam=new Exam(null,examData.getStartTime(),examData.getEndTime(),examData.getCourseId(),examData.getExamName());
+        try{
+            exam.setExamId(service.getNewExamId());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        try{
+            service.insertNewExam(exam,examData);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        return new Response(success,null);
+    }
+
+    @RequestMapping("/test")
+    public QuestionPaper Test()
+    {
+        QuestionPaper qp=new QuestionPaper("test",new LinkedList<String>());
+        qp.insert("qid1");
+        qp.insert("qid2");
+        qp.insert("qid3");
+        qp.insert("qid4");
+        return qp;
     }
 }

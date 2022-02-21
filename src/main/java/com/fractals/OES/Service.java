@@ -184,4 +184,37 @@ public class Service {
         List<Question> result=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Question.class));
         return result;
     }
+
+    public boolean checkCourseExist(String userId, String courseId) throws Exception{
+        String sql="SELECT * FROM "+databaseName+".COURSES WHERE COURSE_ID='"+courseId+
+                "' AND USER_ID='"+userId+"'";
+        List<Course> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Course.class));
+        return !res.isEmpty();
+    }
+
+    public String getNewExamId() throws Exception{
+        for(int i=0;i<10;++i)
+        {
+            String id=UUID.randomUUID().toString();
+            String sql="SELECT * FROM "+databaseName+".EXAMS WHERE EXAM_ID='"+id+"'";
+            List<Exam> exams=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Exam.class));
+            if(exams.isEmpty())
+                return id;
+        }
+        throw new Exception("Failed to generate new exam id");
+    }
+    public void insertNewExam(Exam exam,ExamData examData) throws Exception{
+        String sql="INSERT INTO "+databaseName+".EXAMS " +
+                "VALUES ('" +exam.getExamId()+"',TO_DATE('"+exam.getStartTime()+"','YYYY-MM-DD:HH24-MI-SS')"+
+                ",TO_DATE('"+exam.getEndTime()+"','YYYY-MM-DD:HH24-MI-SS'),'"+exam.getCourseId()+"','"
+                +exam.getExamName()+"')";
+        jdbcTemplate.execute(sql);
+        List<String> questions=examData.getQuestionIds();
+        for(String qid:questions)
+        {
+            String sql2="INSERT INTO "+databaseName+".QUESTION_PAPER VALUES('"
+                    +exam.getExamId()+"','"+qid+"')";
+            jdbcTemplate.execute(sql2);
+        }
+    }
 }
