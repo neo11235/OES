@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -277,7 +278,45 @@ public class Service {
                 "ON (QP.QUESTION_ID=Q.QUESTION_ID) " +
                 "WHERE QP.EXAM_ID='"+examId+"'";
         List<Question> res= jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Question.class));
-
         return res;
+    }
+    public List<Question> getQuestionsByExamId(String examId)throws Exception//gets questions with rightOptions
+    {
+        String sql="SELECT Q.QUESTION_ID QUESTION_ID,Q.DESCRIPTION DESCRIPTION," +
+                "Q.OPTION1 OPTION1,Q.OPTION2 OPTION2,Q.OPTION3 OPTION3," +
+                "Q.OPTION4 OPTION4,Q.RIGHT_OPTION RIGHT_OPTION,Q.MARK MARK " +
+                "FROM QUESTION_PAPER QP JOIN QUESTIONS Q " +
+                "ON (QP.QUESTION_ID=Q.QUESTION_ID) " +
+                "WHERE QP.EXAM_ID='"+examId+"'";
+        List<Question> res= jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Question.class));
+        return res;
+    }
+
+    public Integer judgeScript(AnswerScript script) throws Exception {
+        List<Question> questions=getQuestionsByExamId(script.getExamId());
+        HashMap<String,Integer> ra=new HashMap<>();
+        HashMap<String,Integer> mark=new HashMap<>();
+        for(Question q:questions)
+        {
+            ra.put(q.getQuestionId(),q.getRightOption());
+            mark.put(q.getQuestionId(),q.getMark());
+        }
+        int totalMark=0;
+        for(Answer answer:script.getAnswers())
+        {
+            if((int)ra.get(answer.getQuestionId())==(int)answer.getAnswer())
+                totalMark+=(int)mark.get(answer.getQuestionId());
+        }
+        return totalMark;
+    }
+
+    public void insertNewAnswerScript(DbAnswerScript dbAnswerScript) throws Exception {
+        String sql="INSERT INTO "+databaseName+".ANSWER_SCRIPT VALUES "+dbAnswerScript.toString();
+        jdbcTemplate.execute(sql);
+    }
+
+    public void insertNewResult(Result result) throws Exception{
+        String sql="INSERT INTO "+databaseName+".RESULT VALUES "+result.toString();
+        jdbcTemplate.execute(sql);
     }
 }

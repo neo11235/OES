@@ -1,6 +1,7 @@
 package com.fractals.OES;
 
 import com.fractals.OES.Classes.*;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -483,5 +484,78 @@ public class Controller {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value="submitExamScript/{token}/{examId}")
+    public Response submitAnswerScript(@PathVariable("token") String token,@PathVariable("examId") String examId,@RequestBody AnswerScript script)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return new Response(failed,"Cant find user");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        Exam exam=null;
+        try
+        {
+            exam=service.getExamById(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,"No such exam");
+        }
+        long millis=System.currentTimeMillis();
+        java.util.Date curTime=new Date(millis);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
+        java.util.Date startTime,endTime;
+        try {
+            startTime = simpleDateFormat.parse(exam.getStartTime());
+            endTime = simpleDateFormat.parse(exam.getEndTime());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,"Date parse error");
+        }
+        if(curTime.before(startTime)||endTime.before(curTime))
+            return new Response(failed,"Cant submit outside of exam window");
+        if(script.getAnswers()==null)
+            return new Response(failed,"No answer was passed");
+        if(!user.getRole().equals("student"))
+            return new Response(failed,"User dont have the privilege");
+        script.setUserId(user.getUserId());
+        script.setExamId(examId);
+        //user validated
+        Result result=new Result();
+        result.setExamId(examId);
+        result.setUserId(user.getUserId());
+        try{
+            result.setScore(service.judgeScript(script));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        String answer=new Gson().toJson(script.getAnswers());
+
+        DbAnswerScript dbAnswerScript=new DbAnswerScript(examId,user.getUserId(),answer);
+        try{
+            service.insertNewAnswerScript(dbAnswerScript);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        try{
+            service.insertNewResult(result);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        return new Response(success,null);
     }
 }
