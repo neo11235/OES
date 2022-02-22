@@ -415,4 +415,26 @@ public class Controller {
         }
         return new Response(success,null);
     }
+
+    @RequestMapping(method = RequestMethod.GET,value="/getAllExam/{token}/{courseId}")
+    public List<Exam> getAllExam(@PathVariable("token") String token, @PathVariable("courseId") String courseId)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        try{
+            return service.getAllExams(courseId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

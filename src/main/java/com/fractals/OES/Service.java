@@ -248,4 +248,13 @@ public class Service {
                 "NOTIFICATION_ID = "+notificationId.toString();
         jdbcTemplate.execute(sql);
     }
+
+    public List<Exam> getAllExams(String courseId) {
+        String sql="SELECT EXAM_ID,TO_CHAR(START_TIME,'YYYY-MM-DD:HH24-MI-SS') START_TIME," +
+                "TO_CHAR(END_TIME,'YYYY-MM-DD:HH24-MI-SS') END_TIME,COURSE_ID,EXAM_NAME " +
+                "FROM "+databaseName+".EXAMS " +
+                "WHERE COURSE_ID = '"+courseId+"'";
+        List<Exam> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Exam.class));
+        return res;
+    }
 }
