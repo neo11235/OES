@@ -257,4 +257,27 @@ public class Service {
         List<Exam> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Exam.class));
         return res;
     }
+
+    public Exam getExamById(String examId) throws Exception{
+        String sql="SELECT EXAM_ID,TO_CHAR(START_TIME,'YYYY-MM-DD:HH24-MI-SS') START_TIME," +
+                "TO_CHAR(END_TIME,'YYYY-MM-DD:HH24-MI-SS') END_TIME,COURSE_ID,EXAM_NAME " +
+                "FROM "+databaseName+".EXAMS " +
+                "WHERE EXAM_ID = '"+examId+"'";
+        List<Exam> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Exam.class));
+        if(res.isEmpty())
+            throw new Exception("No such exam");
+        return res.get(0);
+    }
+
+    public List<Question> getQuestionPaperByExamId(String examId) {
+        String sql="SELECT Q.QUESTION_ID QUESTION_ID,Q.DESCRIPTION DESCRIPTION," +
+                "Q.OPTION1 OPTION1,Q.OPTION2 OPTION2,Q.OPTION3 OPTION3," +
+                "Q.OPTION4 OPTION4,Q.MARK MARK " +
+                "FROM QUESTION_PAPER QP JOIN QUESTIONS Q " +
+                "ON (QP.QUESTION_ID=Q.QUESTION_ID) " +
+                "WHERE QP.EXAM_ID='"+examId+"'";
+        List<Question> res= jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Question.class));
+
+        return res;
+    }
 }

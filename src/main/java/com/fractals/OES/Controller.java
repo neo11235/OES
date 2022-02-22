@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.util.LinkedList;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -341,14 +342,16 @@ public class Controller {
     }
 
     @RequestMapping("/test")
-    public QuestionPaper Test()
+    public AnswerScript Test()
     {
-        QuestionPaper qp=new QuestionPaper("test",new LinkedList<String>());
-        qp.insert("qid1");
-        qp.insert("qid2");
-        qp.insert("qid3");
-        qp.insert("qid4");
-        return qp;
+        List<Answer> answers=new ArrayList<>();
+        answers.add(new Answer("qid1",1));
+        answers.add(new Answer("qid1",2));
+        answers.add(new Answer("qid1",3));
+        answers.add(new Answer("qid1",4));
+        answers.add(new Answer("qid1",5));
+        AnswerScript answerScript=new AnswerScript("examid","userId",answers);
+        return answerScript;
     }
 
     @RequestMapping(method = RequestMethod.GET,value="/getNotifications/{token}/{courseId}/{numberOfNotification}")
@@ -431,6 +434,50 @@ public class Controller {
         }
         try{
             return service.getAllExams(courseId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET,value="/getQuestionPaper/{token}/{examId}")
+    public List<Question> getQuestionPaper(@PathVariable("token")String token,@PathVariable("examId")String examId)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        Exam exam=null;
+        try
+        {
+            exam=service.getExamById(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        long millis=System.currentTimeMillis();
+        java.util.Date curTime=new Date(millis);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
+        java.util.Date startTime;
+        try {
+            startTime = simpleDateFormat.parse(exam.getStartTime());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        if(!user.getRole().equals("teacher")&&!startTime.before(curTime))
+            return null;
+        try{
+            return service.getQuestionPaperByExamId(examId);
         }catch (Exception e)
         {
             e.printStackTrace();
