@@ -382,4 +382,37 @@ public class Controller {
             return null;
         }
     }
+
+    @RequestMapping(method =RequestMethod.PUT,value = "/markAsRead/{token}/{notificationId}")
+    public Response markAsRead(@PathVariable("token") String token,@PathVariable("notificationId") Integer notificationId)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return new Response(failed,"Cant find user");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        Notification notification=null;
+        try {
+            notification=service.getNotificationById(notificationId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        if(!notification.getUserId().equals(user.getUserId()))
+            return new Response(failed,"Dont have the privilege");
+        try{
+            service.updateNotificationReadStatus(notificationId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new Response(failed,e.getMessage());
+        }
+        return new Response(success,null);
+    }
 }

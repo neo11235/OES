@@ -233,4 +233,19 @@ public class Service {
         List<Notification> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Notification.class));
         return res;
     }
+
+    public Notification getNotificationById(Integer notificationId) throws Exception{
+        String sql="SELECT * FROM "+databaseName+".NOTIFICATIONS WHERE " +
+                "NOTIFICATION_ID = "+notificationId.toString();
+        List<Notification> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Notification.class));
+        if(res.isEmpty())
+            throw new Exception("No such notification found");
+        return res.get(0);
+    }
+
+    public void updateNotificationReadStatus(Integer notificationId)throws Exception {
+        String sql="UPDATE "+databaseName+".NOTIFICATIONS SET READ_STATUS = 1 WHERE " +
+                "NOTIFICATION_ID = "+notificationId.toString();
+        jdbcTemplate.execute(sql);
+    }
 }
