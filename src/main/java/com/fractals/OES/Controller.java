@@ -558,4 +558,48 @@ public class Controller {
         }
         return new Response(success,null);
     }
+    @RequestMapping(method = RequestMethod.GET, value="getTotalMark/{token}/{examId}")
+    public Integer getTotalMarks(@PathVariable("token")String token,@PathVariable("examId")String examId)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return -1;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+        Exam exam=null;
+        try
+        {
+            exam=service.getExamById(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+        long millis=System.currentTimeMillis();
+        java.util.Date curTime=new Date(millis);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
+        java.util.Date endTime;
+        try {
+            endTime = simpleDateFormat.parse(exam.getEndTime());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+        if(curTime.before(endTime))
+            return -1;
+        try{
+            return service.getTotalMarks(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 }

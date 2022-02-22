@@ -309,6 +309,16 @@ public class Service {
         }
         return totalMark;
     }
+    public Integer getTotalMarks(String examId) throws Exception
+    {
+        List<Question> questions=getQuestionsByExamId(examId);
+        int totalMarks=0;
+        for(Question q:questions)
+        {
+            totalMarks+=q.getMark();
+        }
+        return totalMarks;
+    }
 
     public void insertNewAnswerScript(DbAnswerScript dbAnswerScript) throws Exception {
         String sql="INSERT INTO "+databaseName+".ANSWER_SCRIPT VALUES "+dbAnswerScript.toString();
