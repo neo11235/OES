@@ -337,4 +337,14 @@ public class Service {
             throw new Exception("Cant find Result");
         return res.get(0).getScore();
     }
+
+    public List<FrResult> getAllResult(String examId) throws Exception{
+        String sql="SELECT (UO.FIRST_NAME||' '||UO.LAST_NAME) USER_NAME, " +
+                "UO.EMAIL EMAIL,R.SCORE SCORE " +
+                "FROM C##OES.RESULT R JOIN USER_OES UO " +
+                "ON (R.USER_ID=UO.USER_ID) " +
+                "WHERE R.EXAM_ID = '"+examId+"'";
+        List<FrResult> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(FrResult.class));
+        return res;
+    }
 }

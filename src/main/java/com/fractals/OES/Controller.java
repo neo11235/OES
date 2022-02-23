@@ -624,4 +624,49 @@ public class Controller {
         }
     }
 
+    @RequestMapping(method = RequestMethod.GET,value="/getAllResult/{token}/{examId}")
+    public List<FrResult> getAllResult(@PathVariable("token") String token,@PathVariable("examId") String examId)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        Exam exam=null;
+        try
+        {
+            exam=service.getExamById(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        long millis=System.currentTimeMillis();
+        java.util.Date curTime=new Date(millis);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
+        java.util.Date endTime;
+        try {
+            endTime = simpleDateFormat.parse(exam.getEndTime());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        if(user.getRole().equals("student")&&curTime.before(endTime))
+            return null;
+        try
+        {
+            return service.getAllResult(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
