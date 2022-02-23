@@ -571,6 +571,28 @@ public class Controller {
             e.printStackTrace();
             return -1;
         }
+        try{
+            return service.getTotalMarks(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET,value="/getResult/{token}/{examId}")
+    public Integer getResult(@PathVariable("token") String token,@PathVariable("examId") String examId)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return -1;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
         Exam exam=null;
         try
         {
@@ -594,7 +616,7 @@ public class Controller {
         if(curTime.before(endTime))
             return -1;
         try{
-            return service.getTotalMarks(examId);
+            return service.getResult(user.getUserId(),examId);
         }catch (Exception e)
         {
             e.printStackTrace();

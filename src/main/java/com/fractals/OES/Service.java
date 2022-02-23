@@ -329,4 +329,12 @@ public class Service {
         String sql="INSERT INTO "+databaseName+".RESULT VALUES "+result.toString();
         jdbcTemplate.execute(sql);
     }
+
+    public Integer getResult(String userId, String examId)throws Exception {
+        String sql="SELECT * FROM "+databaseName+".RESULT WHERE USER_ID ='"+userId+"' AND EXAM_ID ='"+examId+"'";
+        List<Result> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Result.class));
+        if(res.isEmpty())
+            throw new Exception("Cant find Result");
+        return res.get(0).getScore();
+    }
 }
