@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -346,19 +345,6 @@ public class Controller {
             return new Response(failed,e.getMessage());
         }
         return new Response(success,null);
-    }
-
-    @RequestMapping("/test")
-    public AnswerScript Test()
-    {
-        List<Answer> answers=new ArrayList<>();
-        answers.add(new Answer("qid1",1));
-        answers.add(new Answer("qid1",2));
-        answers.add(new Answer("qid1",3));
-        answers.add(new Answer("qid1",4));
-        answers.add(new Answer("qid1",5));
-        AnswerScript answerScript=new AnswerScript("examid","userId",answers);
-        return answerScript;
     }
 
     @RequestMapping(method = RequestMethod.GET,value="/getNotifications/{token}/{courseId}/{numberOfNotification}")
