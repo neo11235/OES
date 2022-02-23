@@ -347,4 +347,12 @@ public class Service {
         List<FrResult> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(FrResult.class));
         return res;
     }
+
+    public String checkIfUserActive(String userId) throws Exception{
+        String sql="SELECT * FROM "+databaseName+"."+"ACTIVE_USER_INFO WHERE USER_ID = '"+userId+"'";
+        List<ActiveUserInfo> res=jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(ActiveUserInfo.class));
+        if(res.isEmpty())
+            throw new Exception("Not active");
+        return res.get(0).getToken();
+    }
 }

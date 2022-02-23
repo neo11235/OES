@@ -29,6 +29,12 @@ public class Controller {
             e.printStackTrace();
             return new LoginResponse("failed",null);
         }
+        try{
+            String token=service.checkIfUserActive(user.getUserId());
+            return new LoginResponse(success,token);
+        }
+        catch (Exception ignored)
+        { }
         LoginResponse response=new LoginResponse("success",null);
         try{
             response.setToken(service.getToken());
@@ -662,6 +668,50 @@ public class Controller {
         try
         {
             return service.getAllResult(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET,value = "/getSolution/{token}/{examId}")
+    public List<Question> getSolution(@PathVariable("token") String token,@PathVariable("examId") String examId)
+    {
+        User user=null;
+        try{
+            user=service.getUserByToken(token);
+            if(user==null)
+                return null;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        Exam exam=null;
+        try
+        {
+            exam=service.getExamById(examId);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        long millis=System.currentTimeMillis();
+        java.util.Date curTime=new Date(millis);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
+        java.util.Date endTime;
+        try {
+            endTime = simpleDateFormat.parse(exam.getEndTime());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        if(user.getRole().equals("student")&&curTime.before(endTime))
+            return null;
+        try{
+            return service.getQuestionsByExamId(examId);
         }catch (Exception e)
         {
             e.printStackTrace();
